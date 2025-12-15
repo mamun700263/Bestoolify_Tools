@@ -1,7 +1,12 @@
+import inspect
+import json
+import logging
+import os
+import re
+import sys
 from datetime import datetime, timedelta
-import logging, os, sys, re, json, inspect
-from typing import List, Optional
 from logging.handlers import RotatingFileHandler
+from typing import List, Optional
 
 
 class JSONFormatter(logging.Formatter):

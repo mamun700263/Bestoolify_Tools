@@ -1,8 +1,8 @@
 import asyncio
 import os
+
 from app.core.data_exporters import FileSaver
 from app.tasks.google_map_scraper import run_scraper
-
 
 if __name__ == "__main__":
     query = os.getenv("QUERY")

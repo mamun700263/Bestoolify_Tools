@@ -1,6 +1,7 @@
 import time
+
 import requests
-from requests.exceptions import Timeout, ConnectionError, RequestException
+from requests.exceptions import ConnectionError, RequestException, Timeout
 
 from app.core import Logger
 

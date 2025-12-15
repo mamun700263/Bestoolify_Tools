@@ -1,4 +1,4 @@
-from app.models import GoogleMapSearch
+from .models import GoogleMapSearch
 
 
 def valid_address(address: str) -> bool:
@@ -10,8 +10,11 @@ def valid_address(address: str) -> bool:
         and not any(word in address for word in invalid_words)
         and not address == " · "
     )
-def clean_address(address:str):
+
+
+def clean_address(address: str):
     return address[3:]
+
 
 async def extract_address(spans: list, index: int = 0) -> str | None:
     target_indexes = [6, 8, 2]

@@ -1,4 +1,5 @@
 from fastapi import APIRouter
+
 from app.core.celery import celery_app
 from app.tasks.google_map_scraper import run_scraper
 

@@ -1,4 +1,5 @@
 import pytest
+
 from app.scrapers.google_map import card_management
 
 

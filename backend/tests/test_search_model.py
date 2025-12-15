@@ -1,6 +1,7 @@
 import pytest
-from app.models import GoogleMapSearch
 from pydantic import ValidationError
+
+from app.models import GoogleMapSearch
 
 
 class TestGoogleMapSearch:

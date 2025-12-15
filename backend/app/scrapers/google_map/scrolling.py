@@ -1,6 +1,8 @@
-from .card_management import get_cards
-from app.core import Logger
 import random
+
+from app.core import Logger
+
+from .card_management import get_cards
 
 
 async def scrolling_map_search(page: str, logger: Logger):
