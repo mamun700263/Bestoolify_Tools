@@ -1,11 +1,8 @@
-# app/db/models.py
 import uuid
-from datetime import datetime, timedelta
-from enum import Enum
 
-from sqlalchemy import JSON, Boolean, Column, DateTime
-from sqlalchemy import Enum as SAEnum
-from sqlalchemy import ForeignKey, Index, Integer, String, Text
+
+from sqlalchemy import JSON,Column
+from sqlalchemy import ForeignKey,String
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import relationship
 from app.db import Base

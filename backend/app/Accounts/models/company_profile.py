@@ -7,10 +7,9 @@ from sqlalchemy import JSON, Boolean, Column, DateTime
 from sqlalchemy import Enum as SAEnum
 from sqlalchemy import ForeignKey, Index, Integer, String, Text
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
-Base = declarative_base()
+from app.db import Base
 
 
 class CompanyProfile(Base):
