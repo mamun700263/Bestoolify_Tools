@@ -1,0 +1,1 @@
+from .google_map import scrape as google_map_scraper

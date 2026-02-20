@@ -20,7 +20,7 @@ def search_query(sentence: str, laguage: str = "en"):
     return target_url
 
 
-async def scraper(search: str):
+async def _scrape_async(search: str):
     logger.info("scraper on ")
     async with async_playwright() as p:
         browser = await p.chromium.launch(
@@ -44,3 +44,7 @@ async def scraper(search: str):
 
         await browser.close()
         return data
+    
+    
+def scrape(search: str):
+    return asyncio.run(_scrape_async(search))

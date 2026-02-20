@@ -13,7 +13,14 @@ if __name__ == "__main__":
         query = input("search -> ").strip()
         file_name = input("what would be the file name? ").strip()
         FileSaver.check_format(file_name)
-    asyncio.run(run_scraper(query, file_name))
+    # run_scraper.delay(query, file_name)
+    result = run_scraper.delay(query, file_name)
+    print(result.id)         # Task ID
+    print(result.status)     # PENDING, STARTED, SUCCESS
+    print(result.get())      # Blocks until finished
+
+
+
 
 # shops that are open
 # distance
