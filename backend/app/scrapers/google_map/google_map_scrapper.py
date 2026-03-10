@@ -2,7 +2,7 @@ from fastapi import APIRouter
 
 from app.core.celery import celery_app
 from app.tasks.google_map_scraper import run_scraper
-
+from fastapi.responses import StreamingResponse
 router = APIRouter()
 
 
@@ -20,6 +20,7 @@ def task_status(task_id: str):
 
     task_result = AsyncResult(task_id, app=celery_app)
     if task_result.ready():
-        return {"status": "done", "result": task_result.result}
+        return {"status": "done","count":len(task_result.result), "result": task_result.result}
     else:
         return {"status": "pending"}
+    

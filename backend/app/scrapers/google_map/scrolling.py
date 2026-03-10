@@ -7,13 +7,13 @@ from .card_management import get_cards
 
 async def scrolling_map_search(page: str, logger: Logger):
     last_count = 0
-    for scroll_count in range(40):
+    for scroll_count in range(100):
         cards = await get_cards(page, logger)
         count = len(cards)
-        print(f"[Scroll {scroll_count}] Found {count} cards so far...")
+        logger.info(f"[Scroll {scroll_count}] Found {count} cards so far...")
 
         if count == last_count:
-            print("🛑 No new cards after scrolling. Exiting.")
+            logger.info("🛑 No new cards after scrolling. Exiting.")
             break
         last_count = count
 

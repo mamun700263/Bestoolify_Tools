@@ -5,13 +5,8 @@ from app.core.celery import celery_app
 from app.core.data_exporters import FileSaver
 from app.scrapers import google_map_scraper as scraper
 
-logger = Logger.get_logger(__file__, "google_map")
-logger.info(
-    """
-    ################ ################
-    Scraping started
-    ################ ################
-    """)
+logger = Logger.get_logger(__name__, "google_map")
+logger.info("Scraping started")
 
 
 @celery_app.task(
@@ -24,8 +19,8 @@ def run_scraper(self, query: str, file_name: str):
         logger.info(f"Starting scrape for: {query}")
         data = scraper(query)
         # data = asyncio.run(scraper(query))
-        FileSaver.save(data, file_name)
-        logger.info(f"[SUCCESS] Saved results to {file_name}")
+        # FileSaver.save(data, file_name)
+        # logger.info(f"[SUCCESS] Saved results to {file_name}")
         return data
     except Exception as e:
         logger.error(f"Error scraping {query}: {e}")

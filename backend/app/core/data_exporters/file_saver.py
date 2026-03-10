@@ -18,6 +18,8 @@ class FileSaver:
         ".csv": "csv",
         ".json": "json",
         ".xlsx": "excel",
+        "excel":"excel",
+        "xl":"excel",
         ".sqlite": "db",
     }
 

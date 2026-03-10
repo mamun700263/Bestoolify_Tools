@@ -24,8 +24,13 @@ async def _scrape_async(search: str):
     logger.info("scraper on ")
     async with async_playwright() as p:
         browser = await p.chromium.launch(
-            headless=False, slow_mo=150, args=["--start-maximized"]
+            headless=True,
+            args=[
+                "--no-sandbox",
+                "--disable-dev-shm-usage"
+            ]
         )
+
         context = await browser.new_context()
         page = await context.new_page()
         target_url = search_query(search)
@@ -40,7 +45,7 @@ async def _scrape_async(search: str):
         for card in cards:
             cards_data = await extract_card(card)
             cards_data.query = search
-            data.append(cards_data.dict())
+            data.append(cards_data.model_dump(mode="json"))
 
         await browser.close()
         return data

@@ -37,7 +37,10 @@ async def extract_card(card: str):
     rating_el = await card.query_selector("span[class*='MW4etd']")
     reviews_el = await card.query_selector("span[class*='UY7F9']")
     spans = await card.query_selector_all("div.UaQhfb div.W4Efsd div.W4Efsd span")
-    type_of_place = await spans[0].text_content()
+    try:
+        type_of_place = await spans[0].text_content()
+    except:
+        type_of_place="N/A"
 
     if spans:
         address = await extract_address(spans, 0)

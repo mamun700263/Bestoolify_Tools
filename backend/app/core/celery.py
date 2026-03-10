@@ -20,7 +20,11 @@ celery_app.conf.update(
     accept_content=["json"],
     timezone="UTC",
     enable_utc=True,
+    result_expires=3600
 )
 
+@celery_app.task
+def add(x, y):
+    return x + y
 # Autodiscover tasks in app/tasks
 celery_app.autodiscover_tasks(["app.tasks"])
