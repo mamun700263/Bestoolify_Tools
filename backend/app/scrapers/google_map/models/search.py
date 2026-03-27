@@ -33,6 +33,7 @@ class GoogleMapSearch(BaseModel):
         if value in (None, ""):
             return 0
         if isinstance(value, str):
+            print(value)
             digits = "".join(c for c in value if c.isdigit())
             return int(digits) if digits else 0
         return int(value)

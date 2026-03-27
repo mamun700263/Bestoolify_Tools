@@ -71,7 +71,6 @@ async def extract_card(card: str):
 
 async def get_cards(page, logger):
     selectors = ["div.Nv2PK", "div.CpccDe", "div.THOPZb"]
-
     for selector in selectors:
         cards = await page.query_selector_all(selector)
         logger.info(f"found {len(cards)} cards with selecor {selector}")

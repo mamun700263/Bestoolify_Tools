@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from app.scrapers.google_map.google_map_scrapper import \
+from app.scrapers.google_map.router import \
     router as google_map_scrapper_router
 # from app.Accounts.router import router as account_router
 from app.core.celery import add

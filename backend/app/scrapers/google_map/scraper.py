@@ -24,12 +24,19 @@ async def _scrape_async(search: str):
     logger.info("scraper on ")
     async with async_playwright() as p:
         browser = await p.chromium.launch(
-            headless=True,
-            args=[
-                "--no-sandbox",
-                "--disable-dev-shm-usage"
-            ]
-        )
+    headless=False,  # still headless
+    args=[
+        "--no-sandbox",
+        "--disable-dev-shm-usage",
+        "--disable-blink-features=AutomationControlled",
+        "--disable-features=IsolateOrigins,site-per-process",
+        "--window-size=1920,1080",
+        "--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+                     "AppleWebKit/537.36 (KHTML, like Gecko) "
+                     "Chrome/119.0.0.0 Safari/537.36",
+    ]
+)
+        
 
         context = await browser.new_context()
         page = await context.new_page()
@@ -40,6 +47,8 @@ async def _scrape_async(search: str):
         await page.wait_for_timeout(5000)
         await scrolling_map_search(page, logger)
         cards = await get_cards(page, logger)
+        await page.screenshot(path="debug.png")
+        # await page.pause()
         logger.info(f"✅ Final count: {len(cards)} cards")
         data = []
         for card in cards:
