@@ -24,7 +24,7 @@ async def _scrape_async(search: str):
     logger.info("scraper on ")
     async with async_playwright() as p:
         browser = await p.chromium.launch(
-    headless=False,  # still headless
+    headless=True,  # still headless
     args=[
         "--no-sandbox",
         "--disable-dev-shm-usage",

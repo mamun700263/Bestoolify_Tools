@@ -5,10 +5,13 @@ from app.scrapers.google_map.router import \
 # from app.Accounts.router import router as account_router
 from app.core.celery import add
 from app.core.data_exporters.export_routers import router as export_routers
+from fastapi.openapi.docs import get_swagger_ui_html
 
 app = FastAPI(
-    title="playwright google scrapper",
+    title="Mamuns Scrapers",
     version="1.0",
+    docs_url=None,
+    redoc_url=None
 )
 
 app.include_router(
@@ -23,25 +26,10 @@ app.include_router(
 
 
 
-@app.get("/")
-def fast_api():
-    return {'mamun': 'i am alive'}
+@app.get("/", include_in_schema=False)
+async def swagger_ui():
+    return get_swagger_ui_html(
+        openapi_url=app.openapi_url,
+        title="My API Docs"
+    )
 
-# from fastapi import FastAPI
-import redis
-import os
-
-# app = FastAPI()
-
-redis_url = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
-r = redis.from_url(redis_url)
-
-@app.get("/redis-test")
-def test_redis():
-    r.set("ping", "pong")
-    return {"ping": r.get("ping").decode()}
-
-@app.get("/celery-test")
-def celery_test():
-    task = add.delay(3, 7)
-    return {"task_id": task.id, "status": task.status}
