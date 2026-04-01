@@ -63,9 +63,10 @@ RUN playwright install --with-deps
 COPY . /app
 
 # Copy and make the start script executable
-COPY start.sh /app/start.sh
-RUN chmod +x /app/start.sh
+COPY . /app
 
-EXPOSE 8000
+COPY healthcheck.py /app/healthcheck.py
 
-CMD ["python3", "healthcheck.py"]
+EXPOSE 10000
+
+CMD ["python", "healthcheck.py"]
