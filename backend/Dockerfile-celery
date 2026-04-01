@@ -65,8 +65,6 @@ COPY . /app
 # Copy and make the start script executable
 COPY . /app
 
-COPY healthcheck.py /app/healthcheck.py
-
 EXPOSE 10000
 
 CMD ["python", "healthcheck.py"]
