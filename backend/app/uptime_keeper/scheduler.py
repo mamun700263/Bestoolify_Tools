@@ -5,7 +5,7 @@ URLS =[
     "https://bestoolify-tools-background-tasks.onrender.com/",
     "https://narayanpur-high-school.onrender.com/",
     "https://online-school-1wkk.onrender.com/", 
-    "https://dashboard.render.com/web/srv-d24v6ufdiees739njq8g",
+    "https://bestoolify-tools.onrender.com",
     "https://google.com",
 ]
 async def scheduler():
