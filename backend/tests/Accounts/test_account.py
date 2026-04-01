@@ -3,7 +3,7 @@ import uuid
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from app.db import Base
-from app.Accounts.models import Account, RoleEnum, AccountStatus
+from app.accounts.models import Account, RoleEnum, AccountStatus
 
 @pytest.fixture(scope="function")
 def db_session():

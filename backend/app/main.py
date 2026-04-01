@@ -3,7 +3,6 @@ from fastapi import FastAPI
 from app.scrapers.google_map.router import \
     router as google_map_scrapper_router
 # from app.Accounts.router import router as account_router
-from app.core.celery import add
 from app.core.data_exporters.export_routers import router as export_routers
 from fastapi.openapi.docs import get_swagger_ui_html
 
