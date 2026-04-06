@@ -9,10 +9,10 @@ logger = Logger.get_logger(__name__, "google_map")
     bind=True,
     name="map_scraper"
 )
-def run_scraper(self, query: str, file_name: str):
+def run_scraper(self, query: str):
     from app.scrapers import google_map_scraper as scraper
     
-    logger.info(f"started search for: {query}, saving as {file_name}")
+    logger.info(f"started search for: {query}")
     try:
         logger.info(f"Starting scrape for: {query}")
         data = scraper(query)
