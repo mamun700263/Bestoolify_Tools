@@ -2,7 +2,7 @@ import asyncio
 from .ping import ping
 
 URLS =[
-    "https://bestoolify-tools-background-tasks.onrender.com/",
+    # "https://bestoolify-tools-background-tasks.onrender.com/",
     "https://narayanpur-high-school.onrender.com/",
     "https://online-school-1wkk.onrender.com/", 
     "https://bestoolify-tools.onrender.com",
