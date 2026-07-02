@@ -2,7 +2,7 @@
 
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import api from "@/lib/api";
+import API from "@/lib/api";
 
 function VerifyContent() {
   const searchParams = useSearchParams();
@@ -26,7 +26,7 @@ function VerifyContent() {
     setStatus("loading");
 
     try {
-      const res = await api.get(`/accounts/verify/${t}`);
+      const res = await API.get(`/accounts/verify/${t}`);
 
       setMessage(res.data.message);
       setStatus("success");

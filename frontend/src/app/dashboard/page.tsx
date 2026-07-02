@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import api from "@/lib/api";
+import API from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 import Link from "next/link";
 
@@ -14,14 +14,16 @@ interface Monitor {
 }
 
 export default function DashboardPage() {
+  
   const { account } = useAuthStore();
   const [monitors, setMonitors] = useState<Monitor[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    
     const fetchMonitors = async () => {
       try {
-        const res = await api.get(`/uptime/accounts/${account?.id}/monitors`);
+        const res = await API.get(`/uptime/accounts/${account?.id}/monitors`);
         setMonitors(res.data);
       } catch (err) {
         console.error(err);
@@ -31,10 +33,10 @@ export default function DashboardPage() {
     };
 
     if (account?.id) fetchMonitors();
+
   }, [account]);
 
   const activeCount = monitors.filter((m) => m.is_active).length;
-
   return (
     <div>
       <h1 className="text-2xl font-bold text-gray-800 mb-6">Overview</h1>

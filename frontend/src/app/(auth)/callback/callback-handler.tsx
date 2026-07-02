@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import api from "@/lib/api";
+import API from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 
 export default function CallbackContent() {
@@ -22,7 +22,7 @@ export default function CallbackContent() {
     localStorage.setItem("access_token", access);
     localStorage.setItem("refresh_token", refresh);
 
-    api
+    API
       .get("/accounts/me")
       .then((res) => {
         login(res.data, access, refresh);

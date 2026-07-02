@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from "react";
-import api from "@/lib/api";
+import API from "@/lib/api";
 
 interface PingResult {
   is_up: boolean;
@@ -30,7 +30,7 @@ export default function TestPage() {
     setResult(null);
 
     try {
-      const res = await api.get("/uptime/test-ping", {
+      const res = await API.get("/uptime/test-ping", {
         params: {
           url,
         },
@@ -94,7 +94,7 @@ export default function TestPage() {
           <input
             value={url}
             onChange={(e) => setUrl(e.target.value)}
-            placeholder="https://api.example.com"
+            placeholder="https:/API.example.com"
             className="flex-1 bg-[#111] border border-zinc-800 rounded-xl px-5 py-4 outline-none focus:border-emerald-500"
           />
 

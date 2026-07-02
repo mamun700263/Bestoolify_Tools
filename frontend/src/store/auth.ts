@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { setToken, removeToken } from "@/lib/auth";
+import { persist } from "zustand/middleware";
 
 interface Account {
   id: string;
@@ -17,21 +17,46 @@ interface AuthState {
   setAccount: (account: Account) => void;
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
-  account: null,
-  isAuthenticated: false,
+export const getToken = (): string | null => {
+  if (typeof window === "undefined") return null;
+  return localStorage.getItem("access_token");
+};
 
-  login: (account, accessToken, refreshToken) => {
-    setToken(accessToken);
-    localStorage.setItem("refresh_token", refreshToken);
-    set({ account, isAuthenticated: true });
-  },
+export const setToken = (token: string): void => {
+  localStorage.setItem("access_token", token);
+};
 
-  logout: () => {
-    removeToken();
-    localStorage.removeItem("refresh_token");
-    set({ account: null, isAuthenticated: false });
-  },
+export const removeToken = (): void => {
+  localStorage.removeItem("access_token");
+};
+function setAccount(accountId: string) {
+  localStorage.setItem("account_id", accountId);
+}
+export const isAuthenticated = (): boolean => {
+  return !!getToken();
+};
+export const useAuthStore = create<AuthState>()(
+  persist(
+    (set) => ({
+      account: null,
+      isAuthenticated: false,
 
-  setAccount: (account) => set({ account }),
-}));
+      login: (account, accessToken, refreshToken) => {
+        setToken(accessToken);
+        localStorage.setItem("refresh_token", refreshToken);
+        set({ account, isAuthenticated: true });
+      },
+
+      logout: () => {
+        removeToken();
+        localStorage.removeItem("refresh_token");
+        set({ account: null, isAuthenticated: false });
+      },
+
+      setAccount: (account) => set({ account }),
+    }),
+    {
+      name: "auth-storage",
+    }
+  )
+);

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import api from "@/lib/api";
+import API from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 import Link from "next/link";
 
@@ -26,7 +26,7 @@ export default function MonitorsPage() {
 
   const fetchMonitors = async () => {
     try {
-      const res = await api.get(`/uptime/accounts/${account?.id}/monitors`);
+      const res = await API.get(`/uptime/accounts/${account?.id}/monitors`);
       setMonitors(res.data);
     } catch (err) {
       console.error(err);
@@ -44,7 +44,7 @@ export default function MonitorsPage() {
     setError("");
     setCreating(true);
     try {
-      await api.post("/uptime/monitors", {
+      await API.post("/uptime/monitors", {
         ...form,
         account_id: account?.id,
       });
@@ -61,7 +61,7 @@ export default function MonitorsPage() {
   const handleDelete = async (id: string) => {
     if (!confirm("Delete this monitor?")) return;
     try {
-      await api.delete(`/uptime/monitors/${id}`);
+      await API.delete(`/uptime/monitors/${id}`);
       setMonitors((prev) => prev.filter((m) => m.id !== id));
     } catch (err) {
       console.error(err);
@@ -70,7 +70,7 @@ export default function MonitorsPage() {
 
   const handleToggle = async (monitor: Monitor) => {
     try {
-      await api.patch(`/uptime/monitors/${monitor.id}`, {
+      await API.patch(`/uptime/monitors/${monitor.id}`, {
         is_active: !monitor.is_active,
       });
       await fetchMonitors();

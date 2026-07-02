@@ -2,7 +2,7 @@ export default function LeaderboardPage() {
   const data = [
     { url: "https://google.com", score: 120 },
     { url: "https://github.com", score: 180 },
-    { url: "https://api.tavdev.com", score: 95 },
+    { url: "https:/API.tavdev.com", score: 95 },
   ].sort((a, b) => a.score - b.score);
 
   const getColor = (score: number) => {

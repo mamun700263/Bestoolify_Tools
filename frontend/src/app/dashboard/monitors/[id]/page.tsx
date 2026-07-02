@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import api from "@/lib/api";
+import API from "@/lib/api";
 import Link from "next/link";
 
 interface Monitor {
@@ -33,8 +33,8 @@ export default function MonitorDetailPage() {
     const fetch = async () => {
       try {
         const [monRes, pingRes] = await Promise.all([
-          api.get(`/uptime/monitors/${id}`),
-          api.get(`/uptime/monitors/${id}/pings`),
+          API.get(`/uptime/monitors/${id}`),
+          API.get(`/uptime/monitors/${id}/pings`),
         ]);
         setMonitor(monRes.data);
         setPings(pingRes.data);

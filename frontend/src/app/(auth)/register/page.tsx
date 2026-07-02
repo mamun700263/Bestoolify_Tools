@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import api from "@/lib/api";
+import API from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 import GoogleLoginButton from "@/components/buttons/google_auth_button";
 export default function RegisterPage() {
@@ -19,10 +19,10 @@ export default function RegisterPage() {
 
     try {
       // 1. register
-      await api.post("/accounts/register", form);
+      await API.post("/accounts/register", form);
 
       // 2. auto login
-      const res = await api.post("/accounts/login", form);
+      const res = await API.post("/accounts/login", form);
       login(
         { id: "", email: form.email, role: "user", is_verified: false, status: "pending" },
         res.data.access_token,

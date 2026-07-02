@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import api from "@/lib/api";
+import API from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 
 import GoogleLoginButton from "@/components/buttons/google_auth_button";
@@ -19,14 +19,14 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const res = await api.post("/accounts/login", form);
+      const res = await API.post("/accounts/login", form);
 
-      // fetch full account details
-      const meRes = await api.get("/accounts/me", {
-        headers: { Authorization: `Bearer ${res.data.access_token}` },
-      });
-
-      login(meRes.data, res.data.access_token, res.data.refresh_token);
+      // // fetch full account details
+      // const meRes = await API.get("/accounts/me", {
+      //   headers: { Authorization: `Bearer ${res.data.access_token}` },
+      // });
+      console.log(res);
+      login(res.data.account_id, res.data.access_token, res.data.refresh_token);
       router.push("/dashboard");
     } catch (err: any) {
       setError(err.response?.data?.detail || "Invalid credentials");
