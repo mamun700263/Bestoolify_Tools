@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from app.uptime_keeper import models, schemas
 from app.accounts.models import Account
-
+from app.uptime_keeper.caching.db_to_redis import delete_monitor, update_monitor as redis_monitor_update
 # ------------------------
 # Uptime Monitor CRUD
 # ------------------------
@@ -71,11 +71,7 @@ def delete_monitor(db: Session, monitor_id):
     # --------------------
     # Redis cleanup (event)
     # --------------------
-    from app.core.redis import redis_client
-
-    key = f"uptime:monitor:{monitor_id}"
-    redis_client.delete(key)
-
+    delete_monitor(monitor_id)
     return obj
 
 
@@ -93,20 +89,7 @@ def create_ping(db: Session, data: schemas.UptimePingCreate):
     # --------------------
     # Redis runtime update
     # --------------------
-    from app.core.redis import redis_client
-    import json
-
-    key = f"uptime:monitor:{obj.monitor_id}"
-
-    cached = redis_client.get(key)
-
-    if cached:
-        cached = json.loads(cached)
-
-        cached["last_pinged"] = obj.checked_at.isoformat()
-
-        redis_client.set(key, json.dumps(cached))
-
+    redis_monitor_update(obj.monitor_id,)
     return obj
 
 
