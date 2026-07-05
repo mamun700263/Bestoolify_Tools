@@ -2,6 +2,18 @@ import uuid
 from datetime import datetime
 from pydantic import BaseModel, HttpUrl
 
+from typing import Optional
+from pydantic import BaseModel
+
+
+class MonitorLiveStatus(BaseModel):
+    is_up: bool
+    response_time_ms: Optional[float] = None
+    status_code: Optional[int] = None
+    error: Optional[str] = None
+    checked_at: str
+
+
 
 # ------------------------
 # Uptime Monitor Schemas
@@ -34,7 +46,8 @@ class UptimeMonitorOut(UptimeMonitorBase):
 
     class Config:
         from_attributes = True
-
+class UptimeMonitorWithStatus(UptimeMonitorOut):
+    live: Optional[MonitorLiveStatus] = None
 
 # ------------------------
 # Uptime Ping Schemas

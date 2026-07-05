@@ -7,7 +7,7 @@ from app.db.engine import SessionLocal
 from app.uptime_keeper.models import UptimeMonitor, UptimePing
 from app.uptime_keeper.ping import ping, to_uptime_ping
 from app.uptime_keeper.constants import SCHEDULE_ZSET_KEY 
-
+from app.uptime_keeper.caching.db_to_redis import get_monitor_cached, store_ping_result, update_monitor
 logger = logging.getLogger(__name__)
 
 POLL_INTERVAL_SECONDS = 30
@@ -34,31 +34,26 @@ def _reschedule(monitor_id: str, seconds_from_now: float):
 # SINGLE MONITOR EXECUTION
 # -------------------------
 async def handle_monitor(monitor_id: str):
-    db = SessionLocal()
     success = False
     try:
-        monitor = await asyncio.to_thread(
-            lambda: db.query(UptimeMonitor).filter(UptimeMonitor.id == monitor_id).first()
-        )
+        monitor = await asyncio.to_thread(get_monitor_cached, monitor_id)
 
-        if not monitor or not monitor.is_active:
-            # inactive/deleted: intentionally do NOT reschedule.
-            # re-syncing (sync_monitor_to_redis) is responsible for re-adding it if reactivated.
+        if not monitor or not monitor["is_active"]:
             return
 
-        logger.info("[uptime] pinging %s → %s", monitor.name, monitor.url)
+        logger.info("[uptime] pinging %s → %s", monitor_id, monitor["url"])
 
-        result = await ping(monitor.url)
+        result = await ping(monitor["url"])
         result = to_uptime_ping(result)
 
-        def _write():
-            db.add(UptimePing(monitor_id=monitor.id, **result))
-            db.commit()
+        checked_at = datetime.now(timezone.utc)
 
-        await asyncio.to_thread(_write)
+        # store the ping (redis always, postgres only if down)
+        await asyncio.to_thread(store_ping_result, monitor_id, result)
 
+        # updates cached last_pinged + reschedules in one redis pipeline
         await asyncio.to_thread(
-            _reschedule, str(monitor.id), monitor.interval_minutes * 60
+            update_monitor, monitor_id, checked_at, monitor["interval"]
         )
         success = True
 
@@ -67,15 +62,10 @@ async def handle_monitor(monitor_id: str):
 
     finally:
         if not success:
-            # Still reschedule on failure, just sooner — prevents the monitor
-            # from silently falling out of the schedule forever.
             try:
                 await asyncio.to_thread(_reschedule, monitor_id, FAILURE_RETRY_SECONDS)
             except Exception:
                 logger.exception("[uptime] failed to reschedule %s after failure", monitor_id)
-        db.close()
-
-
 # -------------------------
 # SCHEDULER LOOP
 # -------------------------

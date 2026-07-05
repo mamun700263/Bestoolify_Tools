@@ -23,7 +23,7 @@ export default function DashboardPage() {
     
     const fetchMonitors = async () => {
       try {
-        const res = await API.get(`/uptime/accounts/${account?.id}/monitors`);
+        const res = await API.get(`/uptime/accounts/${account?.id}/monitors/pings?hours=24`);
         setMonitors(res.data);
       } catch (err) {
         console.error(err);
