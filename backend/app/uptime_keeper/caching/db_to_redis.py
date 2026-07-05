@@ -375,10 +375,13 @@ def get_ping_history(monitor_id: str, since_hours: int = 24) -> list[dict]:
     cutoff = time.time() - min(since_hours, 24) * 3600
     try:
         raw = redis_client.zrangebyscore(hist_key, cutoff, "+inf")
+        raw.reverse()
     except Exception:
         logger.exception("Failed to read ping history for %s", monitor_id)
         return []
     return [json.loads(r) for r in raw]
+
+
 # def store_ping_result(monitor_id: str, result: dict):
     # """
     # Up  -> redis only, 1-day TTL. This is 95%+ of pings and never touches Postgres.
