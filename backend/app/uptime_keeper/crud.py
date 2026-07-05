@@ -97,3 +97,9 @@ def get_pings_by_monitor(db: Session, monitor_id):
     return db.query(models.UptimePing).filter(
         models.UptimePing.monitor_id == monitor_id
     ).order_by(models.UptimePing.checked_at.desc()).all()
+
+# def get_pings_by_monitor(db: Session, monitor_id: str, only_incidents: bool = True):
+#     query = db.query(UptimePing).filter(UptimePing.monitor_id == monitor_id)
+#     if only_incidents:
+#         query = query.filter(UptimePing.is_up == False)  # noqa: E712
+#     return query.order_by(UptimePing.checked_at.desc()).all()

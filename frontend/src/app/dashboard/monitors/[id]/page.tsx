@@ -37,6 +37,7 @@ export default function MonitorDetailPage() {
           API.get(`/uptime/monitors/${id}/pings`),
         ]);
         setMonitor(monRes.data);
+        
         setPings(pingRes.data);
       } catch (err) {
         console.error(err);
