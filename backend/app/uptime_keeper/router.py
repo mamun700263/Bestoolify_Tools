@@ -223,14 +223,14 @@ def list_monitors(account_id, db: Session = Depends(get_db)):
 @router.get("/monitors/{monitor_id}/pings", )#response_model=list[schemas.UptimePingOut]
 async def get_monitor_history(
     monitor_id: str,
-    hours: int = Query(24, ge=1, le=24),
+    # hours: int = Query(24, ge=1, le=24),
     account: Account = Depends(get_current_account),
 ):
     monitor = get_monitor_cached(monitor_id)
     if not monitor or monitor.get("account_id") != str(account.id):
         raise HTTPException(status_code=404, detail="Monitor not found")
 
-    return {"monitor_id": monitor_id, "pings": get_ping_history(monitor_id, hours)}
+    return {"monitor_id": monitor_id, "pings": get_ping_history(monitor_id, 24)}
 
 @router.get("/motinor_count/", response_model=int)
 def get_monitor_count(
