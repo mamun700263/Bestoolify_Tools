@@ -232,7 +232,7 @@ async def get_monitor_history(
 
     return {"monitor_id": monitor_id, "pings": get_ping_history(monitor_id, 24)}
 
-@router.get("/motinor_count/", response_model=int)
+@router.get("/monitor_count/", response_model=int)
 def get_monitor_count(
     db: Session = Depends(get_db),
     # _admin: Account = Depends(get_current_admin),  # was unauthenticated — fixed
