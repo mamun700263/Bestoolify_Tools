@@ -4,6 +4,7 @@ import StateSection from "@/components/landing/StatsSection";
 import FeatureSection from "@/components/landing/FeaturesSection";
 import CTASection from "@/components/landing/CTASection";
 import Footer from "@/components/landing/Footer";
+import SystemPulseSection from "@/components/landing/dynamic_user_info";
 
 export default function LandingPage() {
   return (
@@ -29,7 +30,7 @@ export default function LandingPage() {
 
       {/* Features */}
       <FeatureSection></FeatureSection>
-
+      <SystemPulseSection />
       {/* CTA */}
       <CTASection></CTASection>
 
