@@ -39,19 +39,19 @@ export default function DashboardPage() {
   const activeCount = monitors.filter((m) => m.is_active).length;
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-800 mb-6">Overview</h1>
+      <h1 className="mb-6 text-2xl font-bold text-gray-800 sm:text-3xl">Overview</h1>
 
       {/* Stats */}
-      <div className="grid grid-cols-3 gap-4 mb-8">
-        <div className="bg-white rounded-xl p-6 shadow-sm border">
+      <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm border">
           <p className="text-sm text-gray-500">Total Monitors</p>
           <p className="text-3xl font-bold text-gray-800 mt-1">{monitors.length}</p>
         </div>
-        <div className="bg-white rounded-xl p-6 shadow-sm border">
+        <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm border">
           <p className="text-sm text-gray-500">Active</p>
           <p className="text-3xl font-bold text-green-600 mt-1">{activeCount}</p>
         </div>
-        <div className="bg-white rounded-xl p-6 shadow-sm border">
+        <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm border">
           <p className="text-sm text-gray-500">Paused</p>
           <p className="text-3xl font-bold text-yellow-500 mt-1">
             {monitors.length - activeCount}
@@ -61,7 +61,7 @@ export default function DashboardPage() {
 
       {/* Recent monitors */}
       <div className="bg-white rounded-xl shadow-sm border">
-        <div className="p-6 border-b flex justify-between items-center">
+        <div className="flex items-center justify-between border-b p-4 sm:p-4 sm:p-6">
           <h2 className="font-semibold text-gray-800">Your Monitors</h2>
           <Link
             href="/dashboard/monitors"
@@ -72,9 +72,9 @@ export default function DashboardPage() {
         </div>
 
         {loading ? (
-          <div className="p-6 text-sm text-gray-400">Loading...</div>
+          <div className="p-4 sm:p-6 text-sm text-gray-400">Loading...</div>
         ) : monitors.length === 0 ? (
-          <div className="p-6 text-center">
+          <div className="p-4 sm:p-6 text-center">
             <p className="text-gray-400 text-sm">No monitors yet.</p>
             <Link
               href="/dashboard/monitors"
@@ -86,10 +86,12 @@ export default function DashboardPage() {
         ) : (
           <ul className="divide-y">
             {monitors.slice(0, 5).map((m) => (
-              <li key={m.id} className="px-6 py-4 flex justify-between items-center">
+              <li key={m.id} className="flex flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
                 <div>
                   <p className="text-sm font-medium text-gray-800">{m.name}</p>
-                  <p className="text-xs text-gray-400">{m.url}</p>
+                  <p className="break-all text-xs text-gray-400">
+  {m.url}
+</p>
                 </div>
                 <span
                   className={`text-xs px-2 py-1 rounded-full font-medium ${

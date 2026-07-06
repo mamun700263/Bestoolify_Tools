@@ -96,7 +96,7 @@ export default function MonitorsPage() {
         <div className="bg-white rounded-xl shadow-sm border p-6 mb-6">
           <h2 className="font-semibold text-gray-800 mb-4">New Monitor</h2>
           <form onSubmit={handleCreate} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
                 <input
