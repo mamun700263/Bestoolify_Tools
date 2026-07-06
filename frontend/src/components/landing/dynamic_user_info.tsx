@@ -13,7 +13,7 @@ export default function SystemPulseSection() {
       try {
         const [userRes, monitorRes] = await Promise.all([
           API.get("/accounts/all_account_count"),
-          API.get("/uptime/motinor_count/"),
+          API.get("/uptime/monitor_count/"),
         ]);
 
         setUsers(userRes.data);
