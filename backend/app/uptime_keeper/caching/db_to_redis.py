@@ -40,6 +40,7 @@ def _monitor_key(monitor_id: str) -> str:
 #         raise
 
 def sync_monitor_to_redis(monitor: UptimeMonitor):
+
     key = _monitor_key(str(monitor.id))
 
     data = {
@@ -54,6 +55,9 @@ def sync_monitor_to_redis(monitor: UptimeMonitor):
     now = datetime.now(timezone.utc).timestamp()
     next_run = now + (monitor.interval_minutes * 60)
 
+    db = SessionLocal()
+    set_monitor_count(db)
+
     try:
         pipe = redis_client.pipeline()
         pipe.set(key, json.dumps(data))
@@ -66,6 +70,7 @@ def sync_monitor_to_redis(monitor: UptimeMonitor):
 
 def sync_all_monitors():
     db = SessionLocal()
+    set_monitor_count(db)
     try:
         monitors = db.query(UptimeMonitor).all()
         pipe = redis_client.pipeline()
@@ -174,7 +179,7 @@ def get_latest_pings_bulk(monitor_ids: list[str]) -> dict[str, dict | None]:
 #         db.close()
 
 
-def delete_monitor(monitor_id: str):
+def delete_cache_monitor(monitor_id: str):
     logger.info("Deleting monitor %s from redis", monitor_id)
 
     key = _monitor_key(monitor_id)
@@ -379,6 +384,8 @@ def get_ping_history(monitor_id: str, since_hours: int = 24) -> list[dict]:
         logger.exception("Failed to read ping history for %s", monitor_id)
         return []
     return [json.loads(r) for r in raw]
+
+
 # def store_ping_result(monitor_id: str, result: dict):
     # """
     # Up  -> redis only, 1-day TTL. This is 95%+ of pings and never touches Postgres.
@@ -410,3 +417,17 @@ def get_ping_history(monitor_id: str, since_hours: int = 24) -> list[dict]:
     #     db.rollback()
     # finally:
     #     db.close()
+
+
+from  app.uptime_keeper import crud
+
+
+def set_monitor_count(db):
+    db_count = crud.count_monitors(db)
+    try:
+        redis_client.set('monitor_count',db_count)
+    except:
+        logger.exception("Failed to cache latest monitor count")
+
+def get_monitor_count():
+    return redis_client.get('monitor_count')

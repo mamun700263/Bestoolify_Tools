@@ -234,10 +234,10 @@ async def get_monitor_history(
 
 @router.get("/monitor_count/", response_model=int)
 def get_monitor_count(
-    db: Session = Depends(get_db),
     # _admin: Account = Depends(get_current_admin),  # was unauthenticated — fixed
 ):
-    return crud.count_monitors(db)
+    from app.uptime_keeper.caching.db_to_redis import get_monitor_count
+    return get_monitor_count()
 
 # @router.get("/accounts/{account_id}/monitors", response_model=list[schemas.UptimeMonitorOut])
 # def list_monitors(account_id, db: Session = Depends(get_db)):

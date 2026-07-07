@@ -20,7 +20,7 @@ import secrets
 from datetime import datetime, timedelta, timezone
 
 from app.core.email.email import send_verification_email
-
+from app.accounts.caching.cache import set_account_count
 
 async def send_email_verification(db: Session, account: Account):
     # 1. generate a secure random token
@@ -102,6 +102,7 @@ def create_account(db: Session, data: AccountCreate) -> Account:
     # 4. commit everything together — account + profile in one transaction
     db.commit()
     db.refresh(account)
+    set_account_count(db)
     return account
 
 
@@ -136,6 +137,7 @@ def update_account_status(db: Session, account_id, status) -> Account:
     account.status = status
     db.commit()
     db.refresh(account)
+    set_account_count(db)
     return account
 
 
@@ -146,12 +148,14 @@ def delete_account(db: Session, account_id) -> dict:
     account = get_account_by_id(db, account_id)
     db.delete(account)
     db.commit()
+    set_account_count(db)
     return {"message": f"Account {account_id} deleted"}
 
 #for users
 def delete_account_self(db: Session, account) -> dict:
     db.delete(account)
     db.commit()
+    set_account_count(db)
     return {"message": f"Account {account.id} deleted"}
 
 
