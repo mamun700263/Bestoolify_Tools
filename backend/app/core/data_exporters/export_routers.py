@@ -76,16 +76,16 @@ def download_result(task_id: str, format: str = "csv"):
 #         return {"status": "pending"}
 
 
-@router.get("/api/{task_id}")
-def download_api(task_id: str):
-    pass
+# @router.get("/api/{task_id}")
+# def download_api(task_id: str):
+#     pass
 
 
-@router.get("/db/{task_id}")
-def download_db(task_id: str):
-    pass
+# @router.get("/db/{task_id}")
+# def download_db(task_id: str):
+#     pass
 
 
-@router.get("/sheet/{task_id}")
-def download_sheet(task_id: str):
-    pass
+# @router.get("/sheet/{task_id}")
+# def download_sheet(task_id: str):
+#     pass

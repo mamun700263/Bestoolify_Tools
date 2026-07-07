@@ -278,8 +278,9 @@ def list_accounts(db: Session = Depends(get_db),current_account: Account = Depen
     return crud.get_all_accounts(db)
 
 @router.get("/all_account_count", response_model=int)
-def count_accounts(db: Session = Depends(get_db)):
-    return crud.get_all_account_count(db)
+def count_accounts():
+    from app.accounts.caching.cache import get_account_count
+    return get_account_count()
 
 
 

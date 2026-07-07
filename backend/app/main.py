@@ -38,7 +38,7 @@ app.add_middleware(
 # app.include_router(
 #     google_map_scrapper_router, prefix="/google_map_scrapper", tags=["Scraper"]
 # )
-# app.include_router(export_routers, prefix="/export", tags=["export"])
+app.include_router(export_routers, prefix="/export", tags=["export"])
 app.include_router(uptime_keeper, prefix="/uptime", tags=["uptime"])
 app.include_router(account_router, prefix="/accounts", tags=["Accounts"])
 

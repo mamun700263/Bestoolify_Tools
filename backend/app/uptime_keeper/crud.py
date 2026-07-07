@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from app.uptime_keeper import models, schemas
 from app.accounts.models import Account
-from app.uptime_keeper.caching.db_to_redis import delete_monitor, update_monitor as redis_monitor_update
+from app.uptime_keeper.caching.db_to_redis import  update_monitor as redis_monitor_update
 # ------------------------
 # Uptime Monitor CRUD
 # ------------------------
@@ -25,19 +25,6 @@ def create_monitor(db: Session, data: schemas.UptimeMonitorCreate, account: Acco
 
     return obj
 
-def count_monitors(db: Session):
-    return db.query(models.UptimeMonitor).count()
-
-def get_monitor(db: Session, monitor_id):
-    return db.query(models.UptimeMonitor).filter(
-        models.UptimeMonitor.id == monitor_id
-    ).first()
-
-
-def get_monitors_by_account(db: Session, account_id):
-    return db.query(models.UptimeMonitor).filter(
-        models.UptimeMonitor.account_id == account_id
-    ).all()
 
 
 def update_monitor(db: Session, monitor_id, data: schemas.UptimeMonitorUpdate):
@@ -71,9 +58,25 @@ def delete_monitor(db: Session, monitor_id):
     # --------------------
     # Redis cleanup (event)
     # --------------------
-    delete_monitor(monitor_id)
+    from app.uptime_keeper.caching.db_to_redis import delete_cache_monitor
+    delete_cache_monitor(monitor_id)
+    from app.uptime_keeper.caching.db_to_redis import sync_monitor_to_redis
+    sync_monitor_to_redis(obj)
     return obj
 
+def count_monitors(db: Session):
+    return db.query(models.UptimeMonitor).count()
+
+def get_monitor(db: Session, monitor_id):
+    return db.query(models.UptimeMonitor).filter(
+        models.UptimeMonitor.id == monitor_id
+    ).first()
+
+
+def get_monitors_by_account(db: Session, account_id):
+    return db.query(models.UptimeMonitor).filter(
+        models.UptimeMonitor.account_id == account_id
+    ).all()
 
 # ------------------------
 # Uptime Ping CRUD
