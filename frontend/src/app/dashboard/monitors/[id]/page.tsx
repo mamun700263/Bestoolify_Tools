@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import API from "@/lib/api";
 import Link from "next/link";
+import { downloadMonitorPings } from "@/components/monitors/DownloadPingsButton";
 
 interface Monitor {
   id: string;
@@ -81,29 +82,52 @@ export default function MonitorDetailPage() {
   return (
     <div>
       {/* Header */}
-      <div className="mb-6 flex items-center gap-3">
-        <Link
-          href="/dashboard/monitors"
-          className="text-sm text-gray-400 hover:text-gray-600"
-        >
-          ← Back
-        </Link>
+<div className="mb-6 flex items-center justify-between">
+  <div className="flex items-center gap-3">
+    <Link
+      href="/dashboard/monitors"
+      className="text-sm text-gray-400 hover:text-gray-600"
+    >
+      ← Back
+    </Link>
 
-        <h1 className="text-2xl font-bold text-gray-800">
-          {monitor.name}
-        </h1>
+    <h1 className="text-2xl font-bold text-gray-800">
+      {monitor.name}
+    </h1>
 
-        <span
-          className={`text-xs px-2 py-1 rounded-full font-medium ${
-            monitor.is_active
-              ? "bg-green-100 text-green-700"
-              : "bg-yellow-100 text-yellow-700"
-          }`}
-        >
-          {monitor.is_active ? "Active" : "Paused"}
-        </span>
-      </div>
+    <span
+      className={`rounded-full px-2 py-1 text-xs font-medium ${
+        monitor.is_active
+          ? "bg-green-100 text-green-700"
+          : "bg-yellow-100 text-yellow-700"
+      }`}
+    >
+      {monitor.is_active ? "Active" : "Paused"}
+    </span>
+  </div>
+<select
+  defaultValue=""
+  onChange={(e) => {
+    if (!e.target.value) return;
 
+    downloadMonitorPings(
+      monitor.id,
+      e.target.value as "csv" | "json" | "excel"
+    );
+
+    // Reset so the same option can be selected again
+    e.target.value = "";
+  }}
+  className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+>
+  <option value="" disabled>
+    ⬇ Download
+  </option>
+  <option value="csv">CSV</option>
+  <option value="json">JSON</option>
+  <option value="excel">Excel</option>
+</select>
+</div>
       {/* Stats */}
       <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <div className="rounded-xl border bg-white p-6 shadow-sm">
@@ -137,6 +161,7 @@ export default function MonitorDetailPage() {
         </div>
       </div>
 
+
       {/* Ping history */}
       <div className="rounded-xl border bg-white shadow-sm">
         <div className="border-b p-6">
@@ -145,6 +170,7 @@ export default function MonitorDetailPage() {
             {pings.length} records
           </p>
         </div>
+        
 
         {!pings.length ? (
           <div className="p-6 text-center text-sm text-gray-400">
