@@ -232,6 +232,12 @@ async def get_monitor_history(
 
     return {"monitor_id": monitor_id, "pings": get_ping_history(monitor_id, 24)}
 
+@router.get('/pings/download/{monitor_id}')
+def download_pings(monitor_id:str,file_type:str):
+    from app.uptime_keeper.export import monitor_ping_data
+    return monitor_ping_data(monitor_id,file_type)
+
+
 @router.get("/monitor_count/", response_model=int)
 def get_monitor_count(
     # _admin: Account = Depends(get_current_admin),  # was unauthenticated — fixed

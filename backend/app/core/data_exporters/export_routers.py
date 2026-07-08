@@ -10,7 +10,7 @@ import io
 
 import pandas as pd
 from fastapi.responses import StreamingResponse
-
+from app.core.data_exporters.download_able import export_to_download
 
 @router.get("/save_as/{task_id}")
 def download_result(task_id: str, format: str = "csv"):
@@ -20,35 +20,7 @@ def download_result(task_id: str, format: str = "csv"):
 
     # Convert Celery result (list of dicts) to DataFrame
     data = task_result.result
-    df = pd.DataFrame(data)
-
-    buffer = io.BytesIO()
-    headers = {}
-
-    if format == "csv":
-        buffer = io.StringIO()
-        df.to_csv(buffer, index=False)
-        buffer.seek(0)
-        headers = {"Content-Disposition": 'attachment; filename="results.csv"'}
-        return StreamingResponse(buffer, media_type="text/csv", headers=headers)
-
-    elif format == "json":
-        buffer.write(df.to_json(orient="records", indent=4).encode("utf-8"))
-        buffer.seek(0)
-        headers = {"Content-Disposition": 'attachment; filename="results.json"'}
-        return StreamingResponse(buffer, media_type="application/json", headers=headers)
-
-    elif format == "excel":
-        with pd.ExcelWriter(buffer, engine="xlsxwriter") as writer:
-            df.to_excel(writer, index=False, sheet_name="Results")
-        buffer.seek(0)
-        headers = {"Content-Disposition": 'attachment; filename="results.xlsx"'}
-        return StreamingResponse(
-            buffer,
-            media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            headers=headers,
-        )
-
+    return export_to_download(data,format)
 
 # @router.get("/csv/{task_id}")
 # def download_csv(task_id: str,name_of_file):
