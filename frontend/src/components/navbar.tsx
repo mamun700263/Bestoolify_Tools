@@ -47,13 +47,19 @@ export default function Navbar() {
           <Link href="/test" className={navLink("/test")}>
             Test API
           </Link>
-
+          <Link
+          href="/pricing"
+          className={navLink("/pricing")}
+          >
+            Pricing
+          </Link>
+{/* 
           <Link
             href="/leaderboard"
             className={navLink("/leaderboard")}
           >
             Leaderboard
-          </Link>
+          </Link> */}
 
           {isAuthenticated && (
             <Link
