@@ -197,11 +197,14 @@ def create_monitor(
     db: Session = Depends(get_db),
     account: Account = Depends(get_current_account),
 ):
-    monitor = crud.create_monitor(db, payload, account)
-    from app.uptime_keeper.caching.db_to_redis import sync_monitor_to_redis
-    sync_monitor_to_redis(monitor)  # register in redis immediately, no waiting for next sync_all
-    return monitor
+    try:
+        monitor = crud.create_monitor(db, payload, account)
+    except crud.MonitorLimitExceeded:
+        raise HTTPException(status_code=403, detail="You've reached your 10 monitor limit.")
 
+    from app.uptime_keeper.caching.db_to_redis import sync_monitor_to_redis
+    sync_monitor_to_redis(monitor)
+    return monitor
 
 @router.get("/monitors/{monitor_id}", response_model=schemas.UptimeMonitorOut)
 def get_monitor(
@@ -216,7 +219,13 @@ def get_monitor(
         raise HTTPException(status_code=404, detail="Monitor not found")  # 404, not 403 — don't leak existence
     return obj
 @router.get("/accounts/{account_id}/monitors", response_model=list[schemas.UptimeMonitorOut])
-def list_monitors(account_id, db: Session = Depends(get_db)):
+def list_monitors(
+    account_id: str,
+    db: Session = Depends(get_db),
+    account: Account = Depends(get_current_account),
+):
+    if str(account_id) != str(account.id):
+        raise HTTPException(status_code=404, detail="Not found")  # 404, not 403 — consistent with your other endpoints, don't leak existence
     return crud.get_monitors_by_account(db, account_id)
 
 # @router.get("/monitors/{monitor_id}/history")
