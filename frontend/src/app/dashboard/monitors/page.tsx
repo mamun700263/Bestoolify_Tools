@@ -164,16 +164,18 @@ export default function MonitorsPage() {
           <ul className="divide-y">
             {monitors.map((m) => (
               <li key={m.id} className="px-6 py-4 flex justify-between items-center">
-                <div>
-                  <Link
+                <Link
                     href={`/dashboard/monitors/${m.id}`}
                     className="text-sm font-medium text-gray-800 hover:text-blue-600"
                   >
+                <div>
+                  
                     {m.name}
-                  </Link>
+                  
                   <p className="text-xs text-gray-400">{m.url}</p>
                   <p className="text-xs text-gray-400">Every {m.interval_minutes} min</p>
                 </div>
+                </Link>
                 <div className="flex items-center gap-3">
                   <span
                     className={`text-xs px-2 py-1 rounded-full font-medium ${
@@ -197,6 +199,7 @@ export default function MonitorsPage() {
                     Delete
                   </button>
                 </div>
+                
               </li>
             ))}
           </ul>
