@@ -80,7 +80,7 @@ export default function TestPage() {
           </div>
 
           <h1 className="text-5xl font-black tracking-tight mb-4">
-            Test Any API
+            Test Any URL
           </h1>
 
           <p className="text-zinc-400 text-lg max-w-2xl">

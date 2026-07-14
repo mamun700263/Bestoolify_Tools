@@ -200,7 +200,7 @@ export default function MonitorsPage() {
                   </button>
                 </div>
                 
-              </li>
+               </li>
             ))}
           </ul>
         )}
