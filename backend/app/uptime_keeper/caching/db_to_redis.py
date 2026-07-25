@@ -7,7 +7,7 @@ from app.core.redis import redis_client
 from app.db.engine import SessionLocal
 from app.uptime_keeper.models import UptimeMonitor
 from app.uptime_keeper.constants import SCHEDULE_PREFIX, SCHEDULE_ZSET_KEY
-logger = logging.getLogger(__name__)
+logger = logging.get_logger(__name__)
 
 
 
