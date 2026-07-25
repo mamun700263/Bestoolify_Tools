@@ -3,10 +3,9 @@ from sqlalchemy.orm import Session
 from app.core.logger import Logger
 from app.accounts.models import Account
 from app.db import get_db
-from app.core.redis import redis_client
 from app.uptime_keeper import crud, schemas
-from app.uptime_keeper.caching.db_to_redis import get_monitor_cached, get_latest_pings_bulk,get_ping_history
-from app.accounts.dependencies import get_current_account, get_current_admin
+from app.uptime_keeper.caching.db_to_redis import get_monitor_cached, get_ping_history
+from app.accounts.dependencies import get_current_account
 from .ping import ping
 
 router = APIRouter()
