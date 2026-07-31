@@ -3,7 +3,7 @@ from app.core.logger import Logger
 from datetime import datetime, timezone
 
 
-logger = Logger.get_logger("ping")
+logger = Logger.get_logger(__name__,"uptime")
 
 async def normalize_url(url: str) -> str:
     url = url.strip()

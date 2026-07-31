@@ -3,12 +3,13 @@ import logging
 from datetime import datetime, timezone
 
 from app.core.redis import redis_client
+from app.core.logger import Logger
 from app.db.engine import SessionLocal
 from app.uptime_keeper.models import UptimeMonitor, UptimePing
 from app.uptime_keeper.ping import ping, to_uptime_ping
 from app.uptime_keeper.constants import SCHEDULE_ZSET_KEY 
 from app.uptime_keeper.caching.db_to_redis import get_monitor_cached, store_ping_result, update_monitor
-logger = logging.get_logger(__name__)
+logger = Logger.get_logger(__name__,"uptime")
 
 POLL_INTERVAL_SECONDS = 30
 FAILURE_RETRY_SECONDS = 60  # backoff before retrying a failed monitor
