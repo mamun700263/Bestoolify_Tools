@@ -75,7 +75,7 @@ async def get_monitor_history(
 
 @router.get('/pings/download/{monitor_id}')
 def download_pings(monitor_id:str,file_type:str):
-    from app.uptime_keeper.export import monitor_ping_data
+    from app.uptime_keeper.services.export import monitor_ping_data
     return monitor_ping_data(monitor_id,file_type)
 
 

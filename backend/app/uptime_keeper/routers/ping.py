@@ -3,7 +3,7 @@ from fastapi import (
     Query
     )
 from app.core.logger import Logger
-from .ping import ping
+from app.uptime_keeper.ping import ping
 
 router = APIRouter()
 
