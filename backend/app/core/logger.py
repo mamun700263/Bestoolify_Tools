@@ -65,6 +65,19 @@ class Logger:
         to_console: bool = False,
         format: str = "text",
     ) -> logging.Logger:
+        """
+        Create and configure a logger.
+
+        Args:
+            name: Logger name. Defaults to the calling module name.
+            file_name: Name of the log file to save logs to
+                (e.g. ``"app.log"``). If ``None``, file logging is disabled.
+            to_console: Whether to also output logs to the console.
+            format: Log output format (``"text"`` or ``"json"``).
+
+        Returns:
+            Configured ``logging.Logger`` instance.
+        """
 
         if not name:
             name = cls.name_finder()

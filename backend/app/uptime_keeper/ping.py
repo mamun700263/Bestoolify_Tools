@@ -1,6 +1,9 @@
 import httpx
+from app.core.logger import Logger
 from datetime import datetime, timezone
 
+
+logger = Logger.get_logger(__name__,"uptime")
 
 async def normalize_url(url: str) -> str:
     url = url.strip()
@@ -45,15 +48,25 @@ async def ping(url: str) -> dict:
                 "checked_at": checked_at,
                 "error_message": None,
             }
+            logger.debug(f"ping successfull {url} {elapsed_ms}")
             return st
 
-    except httpx.TimeoutException:
+    except httpx.TimeoutException as e:
         error_type = "timeout"
-    except httpx.ConnectError:
+        logger.error(
+        f"Ping failed | url={url} | type={error_type} | error={e}"
+    )
+    except httpx.ConnectError as e:
         error_type = "connection_refused"
-    except Exception:
+        logger.error(
+        f"Ping failed | url={url} | type={error_type} | error={e}"
+    )
+    except Exception as e:
         error_type = "http_error"
-    
+        logger.error(
+        f"Ping failed | url={url} | type={error_type} | error={e}"
+    )
+    logger.error(f"{url} failed {error_type}")
     return {
         "is_up": False,
         "status_code": None,

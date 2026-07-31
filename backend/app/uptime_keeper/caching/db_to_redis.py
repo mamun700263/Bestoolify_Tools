@@ -1,13 +1,13 @@
 import json
 import os
-import logging
 from datetime import datetime, timezone
 
 from app.core.redis import redis_client
+from app.core.logger import Logger
 from app.db.engine import SessionLocal
 from app.uptime_keeper.models import UptimeMonitor
 from app.uptime_keeper.constants import SCHEDULE_PREFIX, SCHEDULE_ZSET_KEY
-logger = logging.getLogger(__name__)
+logger = Logger.get_logger(__name__,"redis")
 
 
 
