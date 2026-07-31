@@ -2,13 +2,16 @@ import io
 
 import pandas as pd
 from fastapi.responses import StreamingResponse
+from app.core import Logger
 
+logger = Logger.get_logger(__name__,"Data Exporters")
 
 def export_to_download(data:list[dict],format: str = "csv"):
     df = pd.DataFrame(data)
     buffer = io.BytesIO()
     headers = {}
 
+    logger.info(f"saving file as {format}")
     if format == "csv":
         buffer = io.StringIO()
         df.to_csv(buffer, index=False)
