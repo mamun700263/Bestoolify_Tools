@@ -1,163 +1,408 @@
-# Bestoolify Tools
+# Tavdev Monitor — Backend
 
-> A scalable backend suite for scraping Google Maps using FastAPI, Celery, Redis, and Playwright.
+The backend service powering **Tavdev Monitor**, a lightweight uptime and API monitoring platform built for developers.
 
-## 🚀 Overview
+Live application: https://monitor.tavdev.com
 
-Bestoolify Tools is designed for reliable, asynchronous web scraping and data export:
+The backend provides APIs for:
 
-- Accepts scraping jobs via HTTP APIs
-- Processes tasks asynchronously with Celery workers
-- Scrapes Google Maps search results using Playwright
-- Exports results in CSV or JSON formats
-- Supports real-world deployment with Docker
-
----
-
-## 🧰 Tech Stack
-
-- **Python 3.12**
-- **FastAPI** – API endpoints
-- **Celery** – Background task processing
-- **Redis** – Message broker & result backend
-- **Playwright** – Browser automation
-- **Docker & Docker Compose** – Development and deployment
-- **Alembic** – Database migrations
+* Creating and managing monitoring targets
+* Instantly checking the health of any URL
+* Tracking response time and HTTP health
+* Scheduling recurring checks
+* Maintaining the last 24 hours of monitoring data
+* Recording incidents and failed responses
+* Exporting monitoring data
+* User authentication and monitor limits
 
 ---
 
-## 📦 Features
+## Tech Stack
 
-- REST API to enqueue scraping jobs
-- Dynamic query scraping
-- Multiple export formats (CSV / JSON)
-- Logging and monitoring via Flower dashboard
-- Modular, testable, and production-ready code
+* **Python**
+* **FastAPI**
+* **PostgreSQL**
+* **Redis**
+* **SQLAlchemy**
+* **Alembic**
+* **JWT Authentication**
+* **Google OAuth**
+* **Docker**
+* **Pytest**
 
 ---
 
-## 📁 Repository Structure
+## Architecture
+
+Tavdev Monitor uses PostgreSQL as its persistent data store and Redis as a fast monitoring/scheduling layer.
+
+```text
+                    ┌─────────────────┐
+                    │     Frontend    │
+                    │    Next.js      │
+                    └────────┬────────┘
+                             │
+                             ▼
+                    ┌─────────────────┐
+                    │     FastAPI     │
+                    │      API        │
+                    └───────┬─────────┘
+                            │
+               ┌────────────┴────────────┐
+               │                         │
+               ▼                         ▼
+       ┌─────────────────┐      ┌─────────────────┐
+       │   PostgreSQL    │      │      Redis      │
+       │                 │      │                 │
+       │ Users           │      │ Active monitors │
+       │ Monitors        │      │ Ping history    │
+       │ Persistent data │      │ Fast access     │
+       └─────────────────┘      └────────┬────────┘
+                                         │
+                                         ▼
+                                ┌─────────────────┐
+                                │    Scheduler    │
+                                │                 │
+                                │ 1 / 2 / 5 / 10m │
+                                └────────┬────────┘
+                                         │
+                                         ▼
+                                ┌─────────────────┐
+                                │ Monitored URLs  │
+                                └─────────────────┘
+```
+
+### Why Redis?
+
+The initial implementation repeatedly queried PostgreSQL for monitoring targets.
+
+Instead of repeatedly loading monitor configuration from the database, active monitoring information is cached in Redis.
+
+This allows the scheduler to access monitoring targets without continuously querying PostgreSQL.
+
+PostgreSQL remains the persistent source of truth, while Redis provides the fast-access layer required by the monitoring process.
+
+---
+
+## Core Features
+
+### Instant URL Health Check
+
+The backend provides an unauthenticated endpoint for developers who simply want to check a URL.
+
+It can be used similarly to a lightweight `curl` or Postman request.
+
+```text
+GET /test-ping?url=https://example.com
+```
+
+The response includes health information such as:
+
+* Reachability
+* Response time
+* HTTP response information
+* Check timestamp
+* Error information when applicable
+
+Authentication is **not required** for instant checks.
+
+---
+
+### Continuous Monitoring
+
+Authenticated users can create persistent monitors.
+
+A monitor contains information such as:
+
+```text
+URL
+Monitoring interval
+Account
+Monitor status
+```
+
+Supported monitoring intervals currently include:
+
+* 1 minute
+* 2 minutes
+* 5 minutes
+* 10 minutes
+
+The scheduler periodically checks active monitors and records their results.
+
+---
+
+## Monitoring History
+
+Tavdev Monitor keeps monitoring information for the previous **24 hours**.
+
+The system focuses particularly on unhealthy responses and incidents rather than treating every successful health check as equally valuable.
+
+Users can inspect:
+
+* Recent ping history
+* Response information
+* Failed checks
+* Incidents
+* Monitoring status
+
+---
+
+## Monitor Limits
+
+Continuous monitoring requires authentication.
+
+Each account currently receives a maximum of:
+
+**10 monitors**
+
+The limit exists both as a product constraint and as a resource-protection mechanism, preventing unrestricted users from creating large numbers of monitoring jobs and unnecessarily consuming database and monitoring resources.
+
+Instant URL testing does not require an account.
+
+---
+
+## Authentication
+
+The backend supports authenticated user accounts.
+
+Authentication infrastructure includes:
+
+* Email/password authentication
+* Password hashing
+* JWT-based authentication
+* Access/refresh token flow
+* Google OAuth
+
+Authenticated endpoints use the current account dependency to verify ownership of monitors and protect account-specific resources.
+
+Monitor resources are scoped to their owning account.
+
+---
+
+## API
+
+The main monitoring API currently provides endpoints for:
+
+| Method   | Endpoint                           | Purpose                       |
+| -------- | ---------------------------------- | ----------------------------- |
+| `GET`    | `/test-ping`                       | Instantly check a URL         |
+| `POST`   | `/monitors`                        | Create a monitor              |
+| `GET`    | `/monitors/{monitor_id}`           | Retrieve a monitor            |
+| `PATCH`  | `/monitors/{monitor_id}`           | Update a monitor              |
+| `DELETE` | `/monitors/{monitor_id}`           | Delete a monitor              |
+| `GET`    | `/accounts/{account_id}/monitors`  | List account monitors         |
+| `GET`    | `/monitors/{monitor_id}/pings`     | Retrieve 24-hour ping history |
+| `GET`    | `/monitors/{monitor_id}/incidents` | Retrieve monitor incidents    |
+| `GET`    | `/pings/download/{monitor_id}`     | Export ping data              |
+
+The complete API specification is available through FastAPI's generated OpenAPI documentation when the backend is running.
+
+---
+
+## Data Export
+
+Monitoring data can currently be exported as:
+
+* JSON
+* CSV
+* Excel
+
+The backend also contains infrastructure for additional integrations including:
+
+* Google Sheets
+* Database push
+* API push
+
+These integrations are kept separate from the core monitoring flow so that exporting monitoring data does not become a requirement for the monitoring system itself.
+
+---
+
+## Project Structure
 
 ```text
 backend/
+│
 ├── app/
-│   ├── core/                # Core components (Celery config, logging, exporters)
-│   ├── db/                  # Database setup
-│   ├── scrapers/            # Scraper logic (Google Maps)
-│   └── tasks/               # Celery task definitions
-├── Dockerfile               # FastAPI Docker image
-├── Dockerfile-celery        # Celery worker Docker image
-├── docker-compose.yml       # Development orchestration
+│   ├── accounts/
+│   │   ├── auth.py
+│   │   ├── dependencies.py
+│   │   ├── jwt/
+│   │   ├── oauth/
+│   │   ├── models/
+│   │   └── schemas/
+│   │
+│   ├── core/
+│   │   ├── celery.py
+│   │   ├── email/
+│   │   ├── logger.py
+│   │   └── redis.py
+│   │
+│   ├── db/
+│   │   ├── engine.py
+│   │   ├── base.py
+│   │   └── registry.py
+│   │
+│   ├── uptime_keeper/
+│   │   ├── caching/
+│   │   ├── routers/
+│   │   ├── services/
+│   │   ├── crud.py
+│   │   ├── models.py
+│   │   ├── schemas.py
+│   │   ├── scheduler.py
+│   │   └── ping.py
+│   │
+│   ├── main.py
+│   └── task_manager.py
+│
+├── alembic/
+├── tests/
+├── Dockerfile
+├── Dockerfile-celery
+├── docker-compose.yml
+├── nginx/
+├── pyproject.toml
 ├── requirements.txt
-├── README.md
-└── tests/                   # Unit tests
-````
+└── pytest.ini
+```
+
+The `uptime_keeper` package contains the core monitoring domain.
+
+The `accounts` package handles authentication and account management.
+
+The `core` package contains shared infrastructure such as logging, Redis, email, and background-task infrastructure.
 
 ---
 
-## 🛠️ Local Setup
+## Local Development
 
-### 1. Clone the repository
+### Requirements
+
+You will need:
+
+* Python
+* PostgreSQL
+* Redis
+* Docker
+
+The backend can be run using Docker for local development.
 
 ```bash
-git clone https://github.com/mamun700263/Bestoolify_Tools.git
-cd Bestoolify_Tools/backend
+docker compose up
 ```
 
-### 2. Create virtual environment and install dependencies
+Environment-specific configuration should be supplied through environment variables.
+
+**Never commit credentials, API keys, OAuth secrets, or database passwords to the repository.**
+
+---
+
+## Database
+
+PostgreSQL stores persistent application data including:
+
+* Account information
+* Hashed passwords
+* Monitor configurations
+* Monitoring-related persistent records
+
+Database schema changes are managed using **Alembic**.
+
+```text
+alembic/
+└── versions/
+```
+
+---
+
+## Redis
+
+Redis is used as the high-speed monitoring layer.
+
+The system synchronizes monitor configuration into Redis so the scheduler can access active monitoring targets without repeatedly querying PostgreSQL.
+
+Redis is also used for monitoring-related cached/history data.
+
+This architecture reduces unnecessary database reads and keeps the recurring monitoring workload lightweight.
+
+---
+
+## Scheduling
+
+The current monitoring system uses a custom scheduler rather than Celery for the primary monitoring workflow.
+
+The scheduler organizes monitors according to their configured intervals and performs recurring health checks.
+
+Celery infrastructure exists in the project and may be used more extensively as the system grows.
+
+The intention is to eventually support a more distributed background-job architecture when the monitoring workload justifies it.
+
+---
+
+## Testing
+
+The project uses **pytest** for automated testing.
+
+Tests are located under:
+
+```text
+tests/
+```
+
+and domain-specific tests are also maintained alongside the uptime monitoring module.
+
+Run the test suite with:
 
 ```bash
-python -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-```
-
-### 3. Configure environment variables
-
-Copy `.env.example` to `.env` and fill in your credentials:
-
-```
-REDIS_URL=redis://localhost:6379/0
-CELERY_BROKER_URL=${REDIS_URL}
-CELERY_RESULT_BACKEND=${REDIS_URL}
-```
-
-### 4. Run the development stack
-
-```bash
-docker compose up --build
-```
-
-This starts:
-
-* FastAPI at `http://localhost:8000`
-* Redis message broker
-* Celery worker
-* Flower monitoring dashboard at `http://localhost:5555`
-
----
-
-## 📡 Deployment
-
-For production, deploy services independently:
-
-1. **FastAPI** as the main web service
-2. **Celery Worker** for background tasks
-3. **Redis** as a managed instance
-4. **Flower** (optional) for monitoring
-
-Use platforms like **Render**, **Railway**, or a VPS to host each service.
-
----
-
-## 📌 API Examples
-
-### Start a scrape job
-
-```
-POST /google_map_scrapper/run?target=shoes+stores&file_type=csv
-```
-
-### Check task status
-
-```
-GET /google_map_scrapper/status/{task_id}
+pytest
 ```
 
 ---
 
-## 🧪 Testing
+## Deployment
 
-Run unit tests:
+The backend is containerized with Docker and deployed on **Render**.
 
-```bash
-pytest tests/
-```
+The production architecture uses the containerized FastAPI backend together with its supporting PostgreSQL and Redis infrastructure.
 
 ---
 
-## 📜 License
+## Related Repositories
 
-MIT License
+Tavdev Monitor is part of the broader TAV DEV ecosystem.
 
----
+The frontend is maintained separately within the Tavdev Monitor monorepo.
 
-## 🖼️ Architecture Diagram (Optional)
-
-```
-[ FastAPI API ] --> [ Celery Worker ] --> [ Playwright Scraper ] --> [ CSV / JSON Export ]
-                           |
-                           v
-                        [ Redis ]
-```
+The scraping/toolbox code that originally existed alongside this project is being separated into its own project so that Tavdev Monitor can remain focused on uptime and API monitoring.
 
 ---
 
-## ⚡ Notes for Contributors
+## Current Status
 
-* Use virtual environments
-* Follow PEP8 coding standards
-* Maintain modularity for tasks and scrapers
-* Document all new endpoints or exporters
+Tavdev Monitor is an actively developed project.
 
+The core monitoring functionality currently supports:
 
+* Account creation
+* Authentication
+* Instant URL health checks
+* Recurring URL monitoring
+* 1/2/5/10 minute intervals
+* Redis-backed monitor scheduling
+* 24-hour monitoring history
+* Incident tracking
+* JSON/CSV/Excel exports
+* Docker deployment
+
+Future infrastructure improvements may include broader Celery adoption and additional monitoring integrations.
+
+---
+
+## Author
+
+**Md Abdullah All Mamun**
+
+GitHub: https://github.com/mamun700263
+
+Built under **TAV DEV**.
