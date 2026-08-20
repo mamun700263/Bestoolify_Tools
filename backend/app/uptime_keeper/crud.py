@@ -1,5 +1,3 @@
-# app/uptime_keeper/crud.py
-
 from sqlalchemy import update
 from sqlalchemy.orm import Session
 from app.uptime_keeper import models, schemas
@@ -10,6 +8,7 @@ from app.uptime_keeper.caching.db_to_redis import update_monitor as redis_monito
 class MonitorLimitExceeded(Exception):
     """Raised when an account has no free monitor slots left."""
     pass
+
 
 MAX_MONITORS=10
 # ------------------------
