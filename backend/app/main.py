@@ -8,8 +8,6 @@ from app.accounts.router import router as account_router
 from app.core.data_exporters.export_routers import router as export_routers
 from app.db.base  import Base
 from app.db.engine import engine
-# from app.scrapers.google_map.router import router as google_map_scrapper_router
-# from app.uptime_keeper.router import router as uptime_keeper
 from app.uptime_keeper.routers import router as uptime_keeper
 from app.task_manager import lifespan
 
@@ -36,9 +34,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# app.include_router(
-#     google_map_scrapper_router, prefix="/google_map_scrapper", tags=["Scraper"]
-# )
 app.include_router(export_routers, prefix="/export", tags=["export"])
 app.include_router(uptime_keeper, prefix="/uptime", tags=["uptime"])
 app.include_router(account_router, prefix="/accounts", tags=["Accounts"])
