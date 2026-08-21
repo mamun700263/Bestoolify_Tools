@@ -62,7 +62,7 @@ class Logger:
         cls,
         name: str = None,
         file_name: Optional[str] = None,
-        to_console: bool = False,
+        to_console: bool = True,
         format: str = "text",
     ) -> logging.Logger:
         """
