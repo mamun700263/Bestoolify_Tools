@@ -9,8 +9,10 @@ async def normalize_url(url: str) -> str:
     url_stripe = url.strip()
     if not url.startswith(("http://", "https://")):
         result = f"https://{url_stripe}"
-    logger.info(f"{url} was normalized to {result}")
-    return url
+        logger.info(f"{url} was normalized to {result}")
+        return result
+    logger.debug(f"{url} remains unchanged")
+    return url_stripe
 
 async def ping(url: str) -> dict:
     checked_at = datetime.now(timezone.utc)
