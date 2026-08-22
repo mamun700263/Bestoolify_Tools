@@ -88,7 +88,7 @@ async def scheduler():
                 m.decode() if isinstance(m, bytes) else m for m in due
             ]
 
-            logger.info("Duo monitors: %d", len(monitor_ids))
+            logger.info("Due monitors: %d", len(monitor_ids))
 
             tasks = [handle_monitor(monitor_id) for monitor_id in monitor_ids]
             await asyncio.gather(*tasks)
