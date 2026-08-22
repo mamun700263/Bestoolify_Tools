@@ -34,8 +34,6 @@ async def lifespan(app: FastAPI):
     # -------------------
 
     sync_db_to_redis()
-    # sync_all_monitors()
-    # sync_db_to_redis()
     task = asyncio.create_task(scheduler())
     app.state.scheduler_task = task
 
