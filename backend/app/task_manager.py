@@ -7,6 +7,10 @@ from app.uptime_keeper.caching.db_to_redis import sync_all_monitors, set_monitor
 from app.accounts.caching.cache import set_account_count
 from sqlalchemy.orm import Session
 
+from app.core.logger import Logger
+
+
+logger = Logger.get_logger(__name__,"uptime")
 from app.db import get_db
 
 from app.db.engine import SessionLocal
@@ -30,8 +34,6 @@ async def lifespan(app: FastAPI):
     # -------------------
 
     sync_db_to_redis()
-    # sync_all_monitors()
-    # sync_db_to_redis()
     task = asyncio.create_task(scheduler())
     app.state.scheduler_task = task
 
@@ -47,4 +49,4 @@ async def lifespan(app: FastAPI):
         try:
             await task
         except asyncio.CancelledError:
-            print("[uptime] scheduler stopped")
+            logger.info("Scheduler stopped")
