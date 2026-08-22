@@ -42,7 +42,7 @@ async def handle_monitor(monitor_id: str):
         if not monitor or not monitor["is_active"]:
             return
 
-        logger.info("[uptime] pinging %s → %s", monitor_id, monitor["url"])
+        logger.info("Pinging %s → %s", monitor_id, monitor["url"])
 
         result = await ping(monitor["url"])
         result = to_uptime_ping(result)
@@ -59,19 +59,19 @@ async def handle_monitor(monitor_id: str):
         success = True
 
     except Exception as e:
-        logger.exception("[uptime] monitor failed %s: %r", monitor_id, e)
+        logger.exception("Monitor failed %s: %r", monitor_id, e)
 
     finally:
         if not success:
             try:
                 await asyncio.to_thread(_reschedule, monitor_id, FAILURE_RETRY_SECONDS)
             except Exception:
-                logger.exception("[uptime] failed to reschedule %s after failure", monitor_id)
+                logger.exception("Failed to reschedule %s after failure", monitor_id)
 # -------------------------
 # SCHEDULER LOOP
 # -------------------------
 async def scheduler():
-    logger.info("[uptime] redis scheduler started")
+    logger.info("Redis scheduler started")
 
     while True:
         try:
@@ -81,7 +81,6 @@ async def scheduler():
             due = await asyncio.to_thread(_claim_due, keys=[SCHEDULE_ZSET_KEY], args=[now_ts])
 
             if not due:
-                logger.debug("[uptime] no monitors due")
                 await asyncio.sleep(POLL_INTERVAL_SECONDS)
                 continue
 
@@ -89,12 +88,12 @@ async def scheduler():
                 m.decode() if isinstance(m, bytes) else m for m in due
             ]
 
-            logger.info("[uptime] due monitors: %d", len(monitor_ids))
+            logger.info("Duo monitors: %d", len(monitor_ids))
 
             tasks = [handle_monitor(monitor_id) for monitor_id in monitor_ids]
             await asyncio.gather(*tasks)
 
         except Exception as e:
-            logger.exception("[uptime] scheduler error: %r", e)
+            logger.exception("Scheduler error: %r", e)
 
         await asyncio.sleep(POLL_INTERVAL_SECONDS)
