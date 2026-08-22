@@ -6,9 +6,10 @@ from datetime import datetime, timezone
 logger = Logger.get_logger(__name__,"uptime")
 
 async def normalize_url(url: str) -> str:
-    url = url.strip()
+    url_stripe = url.strip()
     if not url.startswith(("http://", "https://")):
-        url = f"https://{url}"
+        result = f"https://{url_stripe}"
+    logger.info(f"{url} was normalized to {result}")
     return url
 
 async def ping(url: str) -> dict:
