@@ -19,6 +19,21 @@ async def normalize_url(url: str) -> str:
     return url_stripe
 
 
+def message_maker(status_code: int) -> str:
+    if 200 <= status_code < 300:
+        return "Request successful. The service is operating normally."
+
+    if 300 <= status_code < 400:
+        return "The service responded with a redirect."
+
+    if 400 <= status_code < 500:
+        return "The server rejected the request due to a client-side error."
+
+    if 500 <= status_code < 600:
+        return "The server encountered an error while processing the request."
+
+    return "The service returned an unexpected HTTP status code."
+
 
 async def ping(url: str) -> dict:
     checked_at = datetime.now(timezone.utc)
@@ -35,6 +50,7 @@ async def ping(url: str) -> dict:
             )
 
             redirect_count = len(r.history)
+            msg = message_maker(r.status_code)
             st = {
                 # LAYER A: availability
                 "is_up": True,
@@ -55,7 +71,7 @@ async def ping(url: str) -> dict:
 
                 # meta
                 "checked_at": checked_at,
-                "error_message": None,
+                "error_message": msg,
             }
             logger.debug(f"ping successfull {url} {elapsed_ms}")
             return st
