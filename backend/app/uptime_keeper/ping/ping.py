@@ -1,38 +1,9 @@
 import httpx
 from app.core.logger import Logger
 from datetime import datetime, timezone
-
-
+from .url_normalizer import normalize_url
+from .message_maker import message_maker
 logger = Logger.get_logger(__name__,"uptime")
-
-async def normalize_url(url: str) -> str:
-    url_stripe = url.strip()
-    url_stripe = url_stripe.lower()
-    if not url_stripe.startswith(("http://", "https://")):
-        if not url_stripe.startswith("www"):
-            url_stripe = "www."+url_stripe
-        result = f"https://{url_stripe}"
-        logger.info(f"{url} was normalized to {result}")
-        return result
-    
-    logger.debug(f"{url} remains unchanged")
-    return url_stripe
-
-
-def message_maker(status_code: int) -> str:
-    if 200 <= status_code < 300:
-        return "Request successful. The service is operating normally."
-
-    if 300 <= status_code < 400:
-        return "The service responded with a redirect."
-
-    if 400 <= status_code < 500:
-        return "The server rejected the request due to a client-side error."
-
-    if 500 <= status_code < 600:
-        return "The server encountered an error while processing the request."
-
-    return "The service returned an unexpected HTTP status code."
 
 
 async def ping(url: str) -> dict:
